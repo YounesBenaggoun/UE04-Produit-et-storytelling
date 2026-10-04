@@ -7,17 +7,23 @@
     "start": "node src/server.js",
     "seed": "node db/seed.js",
     "test": "node --test",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "prepare": "husky"
   },
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^5.1.0"
   },
   "devDependencies": {
+    "@commitlint/cli": "^21.2.3",
+    "@commitlint/config-conventional": "^21.2.3",
     "@eslint/js": "^9.36.0",
     "eslint": "^9.36.0",
-    "globals": "^16.4.0"
+    "globals": "^16.4.0",
+    "husky": "^9.1.7"
   },
   "private": true,
   "license": "UNLICENSED"
