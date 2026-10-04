@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WellWork</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; color: #222; }
+  h1 { font-size: 1.4rem; }
+  fieldset { margin: 1rem 0; border: 1px solid #ccc; border-radius: 6px; }
+  input, button, textarea { font: inherit; padding: .4rem; margin: .2rem 0; }
+  label { display: block; margin-top: .4rem; }
+  pre { background: #f4f4f4; padding: .6rem; overflow: auto; }
+</style>
+</head>
+<body>
+  <h1>WellWork</h1>
+  <p>Portail de demonstration. Le jeton de session est conserve en clair pour le debogage.</p>
+
+  <fieldset>
+    <legend>Connexion</legend>
+    <label>Email <input id="email" value="admin@wellwork.example"></label>
+    <label>Mot de passe <input id="password" type="password" value="Admin2024!"></label>
+    <button onclick="login()">Se connecter</button>
+    <button onclick="register()">Creer un compte</button>
+  </fieldset>
+
+  <fieldset>
+    <legend>Questionnaire de sante</legend>
+    <label>Niveau de stress (1-10) <input id="stress" type="number" value="6"></label>
+    <label>Antecedents <input id="antecedents" value="aucun"></label>
+    <button onclick="sendQuestionnaire()">Envoyer</button>
+  </fieldset>
+
+  <fieldset>
+    <legend>Reponse serveur</legend>
+    <pre id="out">-</pre>
+  </fieldset>
+
+<script>
+let token = localStorage.getItem('token') || '';
+const out = (o) => document.getElementById('out').textContent = typeof o === 'string' ? o : JSON.stringify(o, null, 2);
+const val = (id) => document.getElementById(id).value;
+async function api(path, opts = {}) {
+  opts.headers = Object.assign({ 'content-type': 'application/json' }, opts.headers || {});
+  if (token) opts.headers.authorization = 'Bearer ' + token;
+  const r = await fetch('/api' + path, opts);
+  return r.json();
+}
+async function login() {
+  const r = await api('/login', { method: 'POST', body: JSON.stringify({ email: val('email'), password: val('password') }) });
+  if (r.token) { token = r.token; localStorage.setItem('token', token); }
+  out(r);
+}
+async function register() {
+  const r = await api('/register', { method: 'POST', body: JSON.stringify({ email: val('email'), password: val('password') }) });
+  if (r.token) { token = r.token; localStorage.setItem('token', token); }
+  out(r);
+}
+async function sendQuestionnaire() {
+  out(await api('/questionnaires', { method: 'POST', body: JSON.stringify({ answers: { stress: Number(val('stress')), antecedents: val('antecedents') } }) }));
+}
+</script>
+</body>
+</html>
